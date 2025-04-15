@@ -12,16 +12,15 @@ app.use(express.json());
 app.use(cors());
 
 //Database connection with mongodb
+const mongoURI = process.env.MONGODB_URI || 'mongodb://root:examplepassword@mongodb:27017/mydatabase?authSource=admin';
 
-// mongoose.connect("mongodb+srv://dharmikparmar1887:1887@cluster0.oq8etwb.mongodb.net/e-commerce");
-mongoose.connect('mongodb://root:examplepassword@localhost:27017/mydatabase?authSource=admin')
+mongoose.connect(mongoURI)
   .then(() => {
     console.log('MongoDB connected');
   })
   .catch((error) => {
     console.error('MongoDB connection error:', error);
   });
-
 
 //API Creation
 
@@ -55,10 +54,13 @@ const upload = multer({storage: storage})
 app.use('/images', express.static('upload/images'))
 
 app.post("/upload", upload.single('product'), (req, res) => {
+    // Get the host from the request or use the default
+    const host = req.get('host') || 'localhost:4000';
+    const protocol = req.protocol || 'http';
+    
     res.json({
         success: 1,
-        // image_url: `http://localhost:${port}/images/${req.file.filename}`
-        image_url: `http://localhost:4000/images/${req.file.filename}`
+        image_url: `${protocol}://${host}/images/${req.file.filename}`
     })
 })
 
