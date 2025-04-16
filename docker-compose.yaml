@@ -2,6 +2,19 @@ version: '3.8'
 name: "ecommerce"
 
 services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - admin
+      - frontend
+    networks:
+      - app-network
+
   backend:
     build: 
       context: ./backend
