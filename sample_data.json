@@ -1,0 +1,132 @@
+[
+    {
+        "id": 1,
+        "name": "arjun",
+        "image": "http://localhost:4000/images/product_1713592758814.png",
+        "category": "kids",
+        "new_price": 73,
+        "old_price": 93,
+        "available": true,
+        "date": {
+            "$date": "2024-12-27T14:27:58.403Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 2,
+        "name": "meera",
+        "image": "http://localhost:4000/images/product_1713592758814.png",
+        "category": "women",
+        "new_price": 93,
+        "old_price": 100,
+        "available": true,
+        "date": {
+            "$date": "2024-12-27T14:27:58.405Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 3,
+        "name": "arjun",
+        "image": "http://localhost:4000/images/product_1713593283352.png",
+        "category": "kids",
+        "new_price": 98,
+        "old_price": 112,
+        "available": true,
+        "date": {
+            "$date": "2024-12-27T14:27:58.405Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 4,
+        "name": "arjun",
+        "image": "http://localhost:4000/images/product_1713593283352.png",
+        "category": "kids",
+        "new_price": 75,
+        "old_price": 114,
+        "available": true,
+        "date": {
+            "$date": "2024-12-27T14:27:58.405Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 5,
+        "name": "krishna",
+        "image": "http://localhost:4000/images/product_1713593283352.png",
+        "category": "women",
+        "new_price": 76,
+        "old_price": 99,
+        "available": true,
+        "date": {
+            "$date": "2024-12-27T14:27:58.405Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 6,
+        "name": "arjun",
+        "image": "http://localhost:4000/images/product_1713593274292.png",
+        "category": "men",
+        "new_price": 68,
+        "old_price": 95,
+        "available": false,
+        "date": {
+            "$date": "2024-12-27T14:27:58.405Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 7,
+        "name": "krishna",
+        "image": "http://localhost:4000/images/product_1713636142535.png",
+        "category": "kids",
+        "new_price": 62,
+        "old_price": 105,
+        "available": false,
+        "date": {
+            "$date": "2024-12-27T14:27:58.405Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 8,
+        "name": "meera",
+        "image": "http://localhost:4000/images/product_1713592758814.png",
+        "category": "kids",
+        "new_price": 88,
+        "old_price": 122,
+        "available": false,
+        "date": {
+            "$date": "2024-12-27T14:27:58.405Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 9,
+        "name": "meera",
+        "image": "http://localhost:4000/images/product_1713593283352.png",
+        "category": "kids",
+        "new_price": 74,
+        "old_price": 82,
+        "available": true,
+        "date": {
+            "$date": "2024-12-27T14:27:58.405Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 10,
+        "name": "meera",
+        "image": "http://localhost:4000/images/product_1713593274292.png",
+        "category": "kids",
+        "new_price": 82,
+        "old_price": 114,
+        "available": true,
+        "date": {
+            "$date": "2024-12-27T14:27:58.405Z"
+        },
+        "__v": 0
+    }
+]
