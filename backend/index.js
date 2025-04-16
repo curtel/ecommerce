@@ -401,11 +401,18 @@ app.post('/updatecartitem', fetchUser, async (req, res) => {
 app.get('/images/:image', (req, res) => {
     const imageName = req.params.image; // Get the image name from the URL
     const imagePath = path.join(__dirname, 'upload/images', imageName); // Construct the image path
+    const defaultImagePath = path.join(__dirname, 'upload/images', 'default-product.png');
 
     res.sendFile(imagePath, (err) => {
         if (err) {
-            console.error(err);
-            res.status(404).send("Image not found");
+            console.error(`Image not found: ${imageName}, serving default image instead`);
+            // Serve the default image instead
+            res.sendFile(defaultImagePath, (defaultErr) => {
+                if (defaultErr) {
+                    console.error('Error serving default image:', defaultErr);
+                    res.status(500).send("Error serving image");
+                }
+            });
         }
     });
 });
