@@ -9,7 +9,11 @@ const cors=require("cors");
 const { log } = require("console");
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: '*',  // For development, allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'auth-token']
+}));
 
 //Database connection with mongodb
 const mongoURI = process.env.MONGODB_URI || 'mongodb://root:examplepassword@mongodb:27017/mydatabase?authSource=admin';
@@ -54,8 +58,8 @@ const upload = multer({storage: storage})
 app.use('/images', express.static('upload/images'))
 
 app.post("/upload", upload.single('product'), (req, res) => {
-    // Get the host from the request or use the default
-    const host = req.get('host') || 'localhost:4000';
+    // Get the host and protocol from the request headers
+    const host = req.get('host');
     const protocol = req.protocol || 'http';
     
     res.json({
