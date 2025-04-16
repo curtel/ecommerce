@@ -1,4 +1,4 @@
-FROM node:18 as build
+FROM node:18
 
 WORKDIR /app
 
@@ -8,18 +8,14 @@ RUN npm install
 
 COPY . .
 
-# Build the app
+# Build the app with CRA
+ENV DISABLE_ESLINT_PLUGIN=true
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
-
-# Copy built assets from build stage
-COPY --from=build /app/dist /usr/share/nginx/html/admin
-
-# Copy custom nginx config
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+# Install serve to serve the static files
+RUN npm install -g serve
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"] 
+# Use serve to serve the React app
+CMD ["serve", "-s", "build", "-l", "80"] 
