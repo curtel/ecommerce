@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react'
 import './NewCollections.css'
 // import new_collections from '../Assets/new_collections'
 import Item from '../Item/Item'
+import { API_URL } from '../../config'
 
 const NewCollections = () => {
     const [newCollections, setNewCollections] = useState([]);
 
     useEffect(() => {
         // Fetch new collections (all categories)
-        fetch('http://localhost:4000/newcollections')
+        fetch(`${API_URL}/newcollections`)
             .then(response => response.json())
             .then(data => {
                 // Get a mix of items from all categories

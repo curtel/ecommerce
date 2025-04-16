@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createContext } from "react";
+import { API_URL } from '../config';
 
 export const ShopContext = createContext(null);
 
@@ -8,12 +9,12 @@ const ShopContextProvider = (props) => {
     const [cartItems, setCartItems] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:4000/allproducts')
+        fetch(`${API_URL}/allproducts`)
             .then((response) => response.json())
             .then((data) => setAll_Product(data));
 
         if (localStorage.getItem('auth-token')) {
-            fetch('http://localhost:4000/getcart', {
+            fetch(`${API_URL}/getcart`, {
                 method: 'POST',
                 headers: {
                     'auth-token': localStorage.getItem('auth-token'),
@@ -52,7 +53,7 @@ const ShopContextProvider = (props) => {
 
         setCartItems(updatedCart);
 
-        fetch('http://localhost:4000/addtocart', {
+        fetch(`${API_URL}/addtocart`, {
             method: 'POST',
             headers: {
                 'auth-token': localStorage.getItem('auth-token'),
@@ -72,7 +73,7 @@ const ShopContextProvider = (props) => {
         setCartItems(updatedCart);
 
         if (localStorage.getItem('auth-token')) {
-            fetch('http://localhost:4000/removefromcart', {
+            fetch(`${API_URL}/removefromcart`, {
                 method: 'POST',
                 headers: {
                     'auth-token': localStorage.getItem('auth-token'),
@@ -100,7 +101,7 @@ const ShopContextProvider = (props) => {
         setCartItems(updatedCart);
 
         if (localStorage.getItem('auth-token')) {
-            fetch('http://localhost:4000/updatecartitem', {
+            fetch(`${API_URL}/updatecartitem`, {
                 method: 'POST',
                 headers: {
                     'auth-token': localStorage.getItem('auth-token'),
@@ -133,7 +134,7 @@ const ShopContextProvider = (props) => {
         setCartItems([]);
         
         if (localStorage.getItem('auth-token')) {
-            fetch('http://localhost:4000/clearcart', {
+            fetch(`${API_URL}/clearcart`, {
                 method: 'POST',
                 headers: {
                     'auth-token': localStorage.getItem('auth-token'),
