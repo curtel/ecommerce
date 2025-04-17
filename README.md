@@ -5,9 +5,9 @@
 
 ## <a name="link">🔗 Links</a>/MERN Stack E-Commerce Website: 
 
-For Frontend:[https://buy-smart-online.netlify.app]
+For Frontend:[http://34.126.129.89/]
 
-For Admin Panel:[https://buy-smart-online1.netlify.app]
+For Admin Panel:[http://34.126.129.89/admin]
 
 
 
