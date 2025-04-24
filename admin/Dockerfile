@@ -8,6 +8,14 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 5173
+# Build the app with CRA
+ENV DISABLE_ESLINT_PLUGIN=true
+RUN npm run build
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"] 
+# Install serve to serve the static files
+RUN npm install -g serve
+
+EXPOSE 80
+
+# Use serve to serve the React app
+CMD ["serve", "-s", "build", "-l", "80"] 

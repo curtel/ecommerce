@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './CSS/LatestCollection.css';
 import Item from '../Components/Item/Item';
+import { API_URL } from '../config';
 
 const LatestCollection = () => {
     const [products, setProducts] = useState([]);
@@ -10,7 +11,7 @@ const LatestCollection = () => {
     useEffect(() => {
         const fetchLatestCollection = async () => {
             try {
-                const response = await fetch('http://localhost:4000/latest-collection');
+                const response = await fetch(`${API_URL}/latest-collection`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch latest collection');
                 }

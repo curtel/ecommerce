@@ -15,20 +15,24 @@ import {
   IconButton,
   CircularProgress,
   Snackbar,
-  Alert
+  Alert,
+  Stack
 } from '@mui/material'
 import PhotoCamera from '@mui/icons-material/PhotoCamera'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 
 const AddProduct = () => {
   const [image, setImage] = useState(null);
+  const [detailImages, setDetailImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
   const [formErrors, setFormErrors] = useState({});
   const [productDetails, setProductDetails] = useState({
     name: "",
     image: "",
+    detail_images: [],
     category: "women",
+    clothingType: "shirt",
     new_price: "",
     old_price: ""
   });
@@ -39,6 +43,7 @@ const AddProduct = () => {
     if (!productDetails.old_price.trim()) errors.old_price = 'Price is required';
     if (!productDetails.new_price.trim()) errors.new_price = 'Offer price is required';
     if (!image) errors.image = 'Product image is required';
+    if (!productDetails.clothingType) errors.clothingType = 'Clothing type is required';
     
     // Validate that prices are numbers
     if (isNaN(Number(productDetails.old_price))) errors.old_price = 'Price must be a number';
@@ -54,6 +59,23 @@ const AddProduct = () => {
     }
   };
 
+  const detailImagesHandler = (e) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      if (files.length > 4) {
+        setNotification({
+          open: true,
+          message: 'Maximum 4 detail images allowed',
+          severity: 'warning'
+        });
+        // Take only first 4 images
+        setDetailImages(files.slice(0, 4));
+      } else {
+        setDetailImages(files);
+      }
+    }
+  };
+
   const handleChange = (e) => {
     setProductDetails({ ...productDetails, [e.target.name]: e.target.value });
   };
@@ -62,69 +84,78 @@ const AddProduct = () => {
     setNotification({ ...notification, open: false });
   };
 
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('product', file);
+
+    const uploadResponse = await fetch('http://localhost:4000/upload', {
+      method: "POST",
+      headers: {
+        Accept: 'application/json',
+      },
+      body: formData,
+    });
+    
+    return await uploadResponse.json();
+  };
+
   const addProduct = async () => {
     if (!validateForm()) return;
     
     setLoading(true);
-    let responseData;
     let product = productDetails;
     
-    const formData = new FormData();
-    formData.append('product', image);
-
     try {
-      const uploadResponse = await fetch('http://localhost:4000/upload', {
+      // Upload main image
+      const mainImageResponse = await uploadImage(image);
+      if (!mainImageResponse.success) {
+        throw new Error('Failed to upload main image');
+      }
+      product.image = mainImageResponse.image_url;
+
+      // Upload detail images
+      const detailImageUrls = [];
+      for (let detailImage of detailImages) {
+        const detailImageResponse = await uploadImage(detailImage);
+        if (!detailImageResponse.success) {
+          throw new Error('Failed to upload detail image');
+        }
+        detailImageUrls.push(detailImageResponse.image_url);
+      }
+      product.detail_images = detailImageUrls;
+
+      // Add product with all images
+      const addProductResponse = await fetch('http://localhost:4000/addproduct', {
         method: "POST",
         headers: {
           Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        body: formData,
+        body: JSON.stringify(product),
       });
       
-      responseData = await uploadResponse.json();
-
-      if (responseData.success) {
-        product.image = responseData.image_url;
-        
-        const addProductResponse = await fetch('http://localhost:4000/addproduct', {
-          method: "POST",
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(product),
-        });
-        
-        const addProductData = await addProductResponse.json();
-        
-        if (addProductData.success) {
-          setNotification({
-            open: true,
-            message: 'Product added successfully!',
-            severity: 'success'
-          });
-          // Clear form
-          setProductDetails({
-            name: "",
-            image: "",
-            category: "women",
-            new_price: "",
-            old_price: ""
-          });
-          setImage(null);
-        } else {
-          setNotification({
-            open: true,
-            message: 'Failed to add product',
-            severity: 'error'
-          });
-        }
-      } else {
+      const addProductData = await addProductResponse.json();
+      
+      if (addProductData.success) {
         setNotification({
           open: true,
-          message: 'Failed to upload image',
-          severity: 'error'
+          message: 'Product added successfully!',
+          severity: 'success'
         });
+        // Clear form
+        setProductDetails({
+          name: "",
+          image: "",
+          detail_images: [],
+          category: "women",
+          clothingType: "shirt",
+          new_price: "",
+          old_price: ""
+        });
+        setImage(null);
+        setDetailImages([]);
+      } else {
+        throw new Error('Failed to add product');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -202,100 +233,133 @@ const AddProduct = () => {
               >
                 <MenuItem value="women">Women</MenuItem>
                 <MenuItem value="men">Men</MenuItem>
-                <MenuItem value="kid">Kid</MenuItem>
+                <MenuItem value="kids">Kids</MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          
+
           <Grid item xs={12} sm={6}>
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center',
-                border: formErrors.image ? '1px dashed #d32f2f' : '1px dashed #ccc',
-                borderRadius: 1,
-                p: 2,
-                height: '100%'
-              }}
-            >
-              {image ? (
-                <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-                  <CardMedia
-                    component="img"
-                    image={URL.createObjectURL(image)}
-                    alt="Product preview"
-                    sx={{ height: 140, objectFit: 'contain' }}
-                  />
-                  <IconButton 
-                    sx={{ position: 'absolute', right: 0, top: 0, color: 'primary.main' }}
-                    component="label"
-                  >
-                    <input
-                      type="file"
-                      hidden
-                      accept="image/*"
-                      onChange={imageHandler}
-                    />
-                    <PhotoCamera />
-                  </IconButton>
-                </Box>
-              ) : (
-                <Button
-                  component="label"
-                  variant="outlined"
-                  startIcon={<UploadFileIcon />}
-                  sx={{ mt: 2, height: '100%' }}
-                >
-                  Upload Image
-                  <input
-                    type="file"
-                    hidden
-                    accept="image/*"
-                    onChange={imageHandler}
-                  />
-                </Button>
-              )}
-              {formErrors.image && (
+            <FormControl fullWidth variant="outlined">
+              <InputLabel>Clothing Type</InputLabel>
+              <Select
+                label="Clothing Type"
+                name="clothingType"
+                value={productDetails.clothingType}
+                onChange={handleChange}
+                error={!!formErrors.clothingType}
+              >
+                <MenuItem value="shirt">Shirt</MenuItem>
+                <MenuItem value="pants">Pants</MenuItem>
+              </Select>
+              {formErrors.clothingType && (
                 <Typography color="error" variant="caption">
-                  {formErrors.image}
+                  {formErrors.clothingType}
                 </Typography>
               )}
-            </Box>
+            </FormControl>
           </Grid>
-          
+
+          <Grid item xs={12}>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Button
+                variant="contained"
+                component="label"
+                startIcon={<PhotoCamera />}
+                sx={{ mt: 1 }}
+              >
+                Upload Image
+                <input
+                  hidden
+                  accept="image/*"
+                  type="file"
+                  onChange={imageHandler}
+                />
+              </Button>
+
+              <Button
+                variant="contained"
+                component="label"
+                startIcon={<UploadFileIcon />}
+                sx={{ mt: 1 }}
+              >
+                Upload Detail Images
+                <input
+                  hidden
+                  accept="image/*"
+                  multiple
+                  type="file"
+                  onChange={detailImagesHandler}
+                />
+              </Button>
+            </Stack>
+
+            {image && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Main Image Preview:
+                </Typography>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={URL.createObjectURL(image)}
+                  alt="Product preview"
+                  sx={{ objectFit: 'contain', borderRadius: 1 }}
+                />
+              </Box>
+            )}
+
+            {detailImages.length > 0 && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Detail Images Preview:
+                </Typography>
+                <Grid container spacing={1}>
+                  {Array.from(detailImages).map((file, index) => (
+                    <Grid item xs={4} key={index}>
+                      <CardMedia
+                        component="img"
+                        height="100"
+                        image={URL.createObjectURL(file)}
+                        alt={`Detail ${index + 1}`}
+                        sx={{ objectFit: 'contain', borderRadius: 1 }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+          </Grid>
+
           <Grid item xs={12}>
             <Button
+              fullWidth
               variant="contained"
-              color="primary"
-              size="large"
               onClick={addProduct}
               disabled={loading}
               sx={{ mt: 2 }}
-              fullWidth
             >
               {loading ? <CircularProgress size={24} /> : 'Add Product'}
             </Button>
           </Grid>
         </Grid>
-      </CardContent>
-      
-      <Snackbar 
-        open={notification.open} 
-        autoHideDuration={6000} 
-        onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert 
-          onClose={handleCloseNotification} 
-          severity={notification.severity}
-          variant="filled"
+
+        <Snackbar 
+          open={notification.open} 
+          autoHideDuration={6000} 
+          onClose={handleCloseNotification}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
-          {notification.message}
-        </Alert>
-      </Snackbar>
+          <Alert 
+            onClose={handleCloseNotification} 
+            severity={notification.severity}
+            variant="filled"
+          >
+            {notification.message}
+          </Alert>
+        </Snackbar>
+      </CardContent>
     </Card>
   );
 };
 
-export default AddProduct
+export default AddProduct;

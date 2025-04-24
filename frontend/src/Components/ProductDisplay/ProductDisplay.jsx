@@ -10,31 +10,50 @@ const ProductDisplay = (props) => {
     const [selectedSize, setSelectedSize] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(product.image);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (!selectedSize) {
             setError('Please select a size');
+            setSuccess(false);
             return;
         }
         if (quantity < 1) {
             setError('Please enter a valid quantity');
+            setSuccess(false);
             return;
         }
         setError('');
-        addToCart(product.id, selectedSize, quantity);
+        try {
+            await addToCart(product.id, selectedSize, quantity);
+            setSuccess(true);
+            setTimeout(() => setSuccess(false), 3000); // Hide success message after 3 seconds
+        } catch (err) {
+            setError('Failed to add to cart. Please try again.');
+            setSuccess(false);
+        }
     };
+
+    // Combine main image with detail images for the list
+    const allImages = [product.image, ...(product.detail_images || [])];
 
     return (
         <div className='productdisplay'>
             <div className="productdisplay-left">
                 <div className="productdisplay-img-list">
-                    <img src={product.image} alt="" />
-                    <img src={product.image} alt="" />
-                    <img src={product.image} alt="" />
-                    <img src={product.image} alt="" />
+                    {allImages.map((img, index) => (
+                        <img 
+                            key={index}
+                            src={img} 
+                            alt="" 
+                            onClick={() => setSelectedImage(img)}
+                            className={selectedImage === img ? 'selected' : ''}
+                        />
+                    ))}
                 </div>
                 <div className="productdisplay-img">
-                    <img className='productdisplay-main-img' src={product.image} alt="" />
+                    <img className='productdisplay-main-img' src={selectedImage} alt="" />
                 </div>
             </div>
             <div className="productdisplay-right">
@@ -74,11 +93,17 @@ const ProductDisplay = (props) => {
                         type="number"
                         min="1"
                         value={quantity}
-                        onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                     />
                 </div>
                 {error && <p className="error-message">{error}</p>}
-                <button onClick={handleAddToCart}>ADD TO CART</button>
+                {success && <p className="success-message">Added to cart successfully!</p>}
+                <button 
+                    onClick={handleAddToCart}
+                    className={success ? 'success' : ''}
+                >
+                    {success ? 'ADDED TO CART!' : 'ADD TO CART'}
+                </button>
                 <p className="productdisplay-right-category"><span>Category : </span>{product.category}</p>
                 <p className="productdisplay-right-category"><span>Tags : </span>Modern, Latest</p>
             </div>

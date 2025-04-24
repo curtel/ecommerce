@@ -1,0 +1,93 @@
+[
+    {
+        "id": 1,
+        "name": "Striped Flutter Sleeve Overlap Collar Peplum Hem Blouse",
+        "image": "product_1.png",
+        "category": "women",
+        "new_price": 50.0,
+        "old_price": 80.5,
+        "available": true,
+        "date": {
+            "$date": "2025-04-19T02:43:58.970Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 2,
+        "name": "Men Green Solid Zippered Full-Zip Slim Fit Bomber Jacket",
+        "image": "product_2.png",
+        "category": "men",
+        "new_price": 85.0,
+        "old_price": 120.5,
+        "available": true,
+        "date": {
+            "$date": "2025-04-19T02:43:58.970Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 4,
+        "name": "Pure Cotton V-Neck T-Shirt",
+        "image": "product_4.png",
+        "category": "men",
+        "new_price": 85.0,
+        "old_price": 120.5,
+        "available": true,
+        "date": {
+            "$date": "2025-04-19T02:43:58.970Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 5,
+        "name": "Floral Print Wrap Dress",
+        "image": "product_5.png",
+        "category": "women",
+        "new_price": 85.0,
+        "old_price": 120.5,
+        "available": true,
+        "date": {
+            "$date": "2025-04-19T02:43:58.970Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 8,
+        "name": "Striped Wrap Blouse",
+        "image": "product_8.png",
+        "category": "women",
+        "new_price": 85.0,
+        "old_price": 120.5,
+        "available": true,
+        "date": {
+            "$date": "2025-04-19T02:43:58.970Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 9,
+        "name": "Men's Denim Jacket",
+        "image": "product_9.png",
+        "category": "men",
+        "new_price": 85.0,
+        "old_price": 120.5,
+        "available": true,
+        "date": {
+            "$date": "2025-04-19T02:43:58.970Z"
+        },
+        "__v": 0
+    },
+    {
+        "id": 10,
+        "name": "Women's Summer Dress",
+        "image": "product_10.png",
+        "category": "women",
+        "new_price": 85.0,
+        "old_price": 120.5,
+        "available": true,
+        "date": {
+            "$date": "2025-04-19T02:43:58.970Z"
+        },
+        "__v": 0
+    }
+]

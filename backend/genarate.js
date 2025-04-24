@@ -1,55 +1,64 @@
 const fs = require('fs');
+const path = require('path');
 
-// Mảng các URL hình ảnh để random
-const imageArray = [
-  "http://localhost:4000/images/product_1713593283352.png",
-  "http://localhost:4000/images/product_1713636142535.png",
-  "http://localhost:4000/images/product_1713593274292.png",
-  "http://localhost:4000/images/product_1713593347232.png",
-  "http://localhost:4000/images/product_1713592758814.png",
-];
+// Hàm lấy danh sách hình ảnh từ thư mục upload/images
+function getImagesFromUploadFolder() {
+    const uploadPath = path.join(__dirname, 'upload/images');
+    try {
+        const files = fs.readdirSync(uploadPath);
+        return files
+            .filter(file => file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg'))
+            .map(file => `http://localhost:4000/images/${file}`);
+    } catch (error) {
+        console.error('Error reading upload folder:', error);
+        return [];
+    }
+}
 
 // Hàm tạo dữ liệu mẫu
 function generateSampleData(num) {
-  const categories = ["men", "women", "kids"];
-  const names = ["sahasra", "arjun", "krishna", "meera"];
-  const data = [];
-  
-  for (let i = 0; i < num; i++) {
-    const randomImage = imageArray[Math.floor(Math.random() * imageArray.length)];
-    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-    const randomName = names[Math.floor(Math.random() * names.length)];
-    const newPrice = Math.floor(Math.random() * 50) + 50; // Giá mới từ 50-100
-    const oldPrice = newPrice + Math.floor(Math.random() * 50); // Giá cũ cao hơn giá mới 0-50
-    const available = Math.random() < 0.5; // true hoặc false ngẫu nhiên
+    const categories = ["men", "women", "kid"];
+    const names = [
+        "Elegant Summer Dress", "Business Suit", "Casual Outfit",
+        "Formal Wear", "Party Dress", "Sport Outfit",
+        "Winter Collection", "Spring Style", "Autumn Fashion"
+    ];
+    const data = [];
+    const images = getImagesFromUploadFolder();
+    
+    if (images.length === 0) {
+        console.error('No images found in upload folder');
+        return [];
+    }
 
-    const item = {
-    //   _id: {
-    //     $oid: crypto.randomUUID(), // Sinh UUID ngẫu nhiên
-    //   },
-      id: i + 1,
-      name: randomName,
-      image: randomImage,
-      category: randomCategory,
-      new_price: newPrice,
-      old_price: oldPrice,
-      available: available,
-      date: {
-        $date: new Date().toISOString(), // Thời gian hiện tại
-      },
-      __v: 0,
-    };
+    for (let i = 0; i < num; i++) {
+        const randomImage = images[Math.floor(Math.random() * images.length)];
+        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+        const randomName = names[Math.floor(Math.random() * names.length)];
+        const newPrice = Math.floor(Math.random() * 50) + 50; // Giá mới từ 50-100
+        const oldPrice = newPrice + Math.floor(Math.random() * 50); // Giá cũ cao hơn giá mới 0-50
+        const available = Math.random() < 0.5; // true hoặc false ngẫu nhiên
 
-    data.push(item);
-  }
-  
-  return data;
+        const item = {
+            id: i + 1,
+            name: randomName,
+            image: randomImage,
+            category: randomCategory,
+            new_price: newPrice,
+            old_price: oldPrice,
+            available: available,
+            date: new Date().toISOString(),
+            detail_images: [
+                images[Math.floor(Math.random() * images.length)],
+                images[Math.floor(Math.random() * images.length)],
+                images[Math.floor(Math.random() * images.length)]
+            ]
+        };
+
+        data.push(item);
+    }
+    
+    return data;
 }
 
-// Sinh dữ liệu mẫu
-const sampleData = generateSampleData(10);
-
-// Xuất ra file JSON
-fs.writeFileSync('sample_data.json', JSON.stringify(sampleData, null, 4), 'utf-8');
-
-console.log("Dữ liệu đã được lưu vào file sample_data.json");
+module.exports = { generateSampleData };
