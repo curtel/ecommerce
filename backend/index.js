@@ -6,8 +6,15 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
+const fs = require('fs');
 const { log } = require("console");
 const { generateSampleData } = require('./genarate');
+
+// Create upload directory if it doesn't exist
+const uploadDir = './upload/images';
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Middleware configuration
 app.use(express.json());
@@ -162,6 +169,7 @@ app.post('/addproduct', async (req, res) => {
         image: req.body.image,
         detail_images: req.body.detail_images || [],
         category: req.body.category,
+        clothingType: req.body.clothingType,
         new_price: req.body.new_price,
         old_price: req.body.old_price,
     });
@@ -190,9 +198,21 @@ app.post('/removeproduct',async (req,res)=>{
 //Creating API for geting All Products
 
 app.get('/allproducts',async (req,res)=>{
-    let products = await Product.find({});
-    console.log("ALL Products Fetched");
-    res.json(products);
+    try {
+        let products = await Product.find({});
+        console.log("ALL Products Fetched");
+        res.json({
+            success: true,
+            count: products.length,
+            products: products
+        });
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Failed to fetch products'
+        });
+    }
 })
 
 // API for getting popular products in women category
