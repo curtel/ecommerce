@@ -9,6 +9,7 @@ const cors = require("cors");
 const fs = require('fs');
 const { log } = require("console");
 const { generateSampleData } = require('./genarate');
+const adminAuthRouter = require('./routes/adminAuth');
 
 // Create upload directory if it doesn't exist
 const uploadDir = './upload/images';
@@ -956,6 +957,9 @@ app.post('/updateproduct', async (req, res) => {
         });
     }
 });
+
+// Admin routes
+app.use('/api/admin', adminAuthRouter);
 
 // Start server
 const server = app.listen(port, () => {

@@ -19,7 +19,7 @@ const Navbar = () => {
   return (
     <div className='navbar'>
       <div className="nav-logo" onClick={() => navigate('/')}>
-        <img src={logo} alt="logo" />
+
         <p>SHOPPER</p>
       </div>
       <img className='nav-dropdown'onClick={dropdown_toggle}src={nav_dropdown} alt="" />

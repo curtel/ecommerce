@@ -1,6 +1,10 @@
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material'
+import { Routes, Route } from 'react-router-dom'
 import Navbar from './Components/Navbar/Navbar'
 import Admin from './Components/Pages/Admin/Admin'
+import Login from './Components/Pages/Login/Login'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute'
 
 const theme = createTheme({
   palette: {
@@ -21,13 +25,25 @@ const theme = createTheme({
 
 const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <div>
-        <Navbar/>
-        <Admin/>
-      </div>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <>
+                  <Navbar />
+                  <Admin />
+                </>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </ThemeProvider>
+    </AuthProvider>
   )
 }
 

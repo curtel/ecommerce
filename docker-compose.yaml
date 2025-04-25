@@ -24,12 +24,13 @@ services:
     ports:
       - "4000:4000"
     environment:
-      - MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/mydatabase?authSource=admin
+      - MONGODB_URI=mongodb://mongodb:27017/ecommerce
       - IMAGE_URL_PREFIX=/images
     depends_on:
       - mongodb
     networks:
       - app-network
+      - mongodb-network
     volumes:
       - ./upload:/app/upload
 
@@ -63,12 +64,8 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
-    volumes:
-      - mongodb_data:/data/db
     networks:
+      - mongodb-network
       - app-network
 
 volumes:
@@ -76,4 +73,6 @@ volumes:
 
 networks:
   app-network:
-    driver: bridge 
+    driver: bridge
+  mongodb-network:
+    external: true 
