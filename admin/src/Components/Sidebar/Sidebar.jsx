@@ -1,8 +1,10 @@
 import React from 'react'
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Box, Divider } from '@mui/material'
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, Box, Divider, Typography } from '@mui/material'
 import { Link, useLocation } from 'react-router-dom'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ViewListIcon from '@mui/icons-material/ViewList'
+import ListAltIcon from '@mui/icons-material/ListAlt'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 
 const Sidebar = () => {
   const location = useLocation();
@@ -15,9 +17,14 @@ const Sidebar = () => {
       path: '/addproduct'
     },
     {
-      text: 'Product List',
-      icon: <ViewListIcon color="primary" />,
+      text: 'List Products',
+      icon: <ListAltIcon color="primary" />,
       path: '/listproduct'
+    },
+    {
+      text: 'Orders',
+      icon: <ShoppingCartIcon color="primary" />,
+      path: '/orders'
     }
   ];
 
@@ -37,6 +44,9 @@ const Sidebar = () => {
       anchor="left"
     >
       <Box sx={{ overflow: 'auto', mt: 2 }}>
+        <Typography variant="h6" sx={{ px: 2, mb: 2 }}>
+          Admin Dashboard
+        </Typography>
         <Divider />
         <List>
           {menuItems.map((item) => (

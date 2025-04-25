@@ -4,6 +4,7 @@ import Sidebar from '../../Sidebar/Sidebar'
 import { Routes, Route } from 'react-router-dom'
 import AddProduct from '../../AddProduct/AddProduct'
 import ListProduct from '../../ListProduct/ListProduct'
+import OrderManagement from '../../OrderManagement/OrderManagement'
 import Login from '../Login/Login'
 import ProtectedRoute from '../../ProtectedRoute/ProtectedRoute'
 import { AuthProvider } from '../../../context/AuthContext'
@@ -24,6 +25,7 @@ const Admin = () => {
                     <Routes>
                       <Route path='/addproduct' element={<AddProduct />} />
                       <Route path='/listproduct' element={<ListProduct />} />
+                      <Route path='/orders' element={<OrderManagement />} />
                       <Route path='/' element={<AddProduct />} />
                     </Routes>
                   </Box>
