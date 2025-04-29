@@ -3,7 +3,7 @@ const Admin = require('../models/Admin');
 
 const createAdmin = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/ecommerce', {
+    await mongoose.connect('mongodb://mongodb:27017/ecommerce', {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

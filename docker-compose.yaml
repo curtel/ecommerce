@@ -43,6 +43,8 @@ services:
     environment:
       - NODE_ENV=production
       - PUBLIC_URL=/admin
+      - REACT_APP_API_URL=/api
+      - REACT_APP_IMAGE_URL=/images
     networks:
       - app-network
 
@@ -75,4 +77,4 @@ networks:
   app-network:
     driver: bridge
   mongodb-network:
-    external: true 
+    driver: bridge
