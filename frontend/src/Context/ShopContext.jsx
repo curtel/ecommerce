@@ -113,9 +113,9 @@ const ShopContextProvider = (props) => {
                     return;
                 }
                 
-                const response = await fetch(`${API_URL}/getcart`, {
+                const response = await fetch(`${API_URL}/user/cart`, {
                     ...fetchConfig,
-                    method: 'POST',
+                    method: 'GET',
                     headers: {
                         ...fetchConfig.headers,
                         'auth-token': token
@@ -142,7 +142,7 @@ const ShopContextProvider = (props) => {
         }
 
         try {
-            const response = await fetch(`${API_URL}/addtocart`, {
+            const response = await fetch(`${API_URL}/user/addtocart`, {
                 ...fetchConfig,
                 method: 'POST',
                 headers: {

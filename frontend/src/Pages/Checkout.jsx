@@ -3,6 +3,7 @@ import './CSS/Checkout.css';
 import { ShopContext } from '../Context/ShopContext';
 import { useNavigate } from 'react-router-dom';
 import { API_URL, fetchConfig } from '../config';
+import PaymentMethod from '../Components/PaymentMethod';
 
 const Checkout = () => {
     const { cartItems, all_product, getTotalCartAmount, clearCart } = useContext(ShopContext);
@@ -20,6 +21,11 @@ const Checkout = () => {
         phone: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [paymentRedirectURL, setPaymentRedirectURL] = useState(null);
+    const [paymentInfo, setPaymentInfo] = useState({
+        method: 'cod',
+        bankcode: ''
+    });
 
     const validateForm = () => {
         let isValid = true;
@@ -83,6 +89,10 @@ const Checkout = () => {
         }
     };
 
+    const handlePaymentMethodChange = (paymentData) => {
+        setPaymentInfo(paymentData);
+    };
+
     const handleSubmit = async () => {
         if (!validateForm()) {
             return;
@@ -133,7 +143,7 @@ const Checkout = () => {
             };
 
             // Create order
-            const response = await fetch(`${API_URL}/create-order`, {
+            const response = await fetch(`${API_URL}/order/create-order`, {
                 method: 'POST',
                 headers: {
                     ...fetchConfig.headers,
@@ -149,8 +159,16 @@ const Checkout = () => {
 
             const data = await response.json();
             if (data.success) {
-                await clearCart(); // Clear the cart after successful order
+                console.log(paymentInfo.method);
+                // Handle payment based on selected method
+                if (paymentInfo.method === 'zalopay') {
+                    // Create ZaloPay payment
+                    await handleZaloPayPayment(data.orderId);
+                } else {
+                    // For COD, just clear the cart and navigate to confirmation
+                    await clearCart();
                 navigate('/order-confirmation/' + data.orderId);
+                }
             } else {
                 throw new Error(data.error || 'Error creating order');
             }
@@ -163,6 +181,45 @@ const Checkout = () => {
             }
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleZaloPayPayment = async (orderId) => {
+        try {
+            const authToken = localStorage.getItem('auth-token');
+            
+            // Create payment request
+            const response = await fetch(`${API_URL}/payment/create-payment/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    ...fetchConfig.headers,
+                    'auth-token': authToken
+                },
+                body: JSON.stringify({
+                    paymentMethod: 'zalopay',
+                    bankcode: paymentInfo.bankcode
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Server error (${response.status})`);
+            }
+
+            const data = await response.json();
+            if (data.success && data.orderurl) {
+                // Clear cart before redirecting
+                await clearCart();
+                
+                // Redirect to ZaloPay payment page
+                window.location.href = data.orderurl;
+            } else {
+                throw new Error(data.message || 'Error creating payment');
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            alert(error.message || 'Error processing payment. Please try again.');
+            throw error;
         }
     };
 
@@ -221,6 +278,11 @@ const Checkout = () => {
                     />
                     {errors.phone && <span className="error-message">{errors.phone}</span>}
                 </div>
+
+                <PaymentMethod 
+                    onSelect={handlePaymentMethodChange}
+                    selectedMethod={paymentInfo.method}
+                />
 
                 <div className="order-summary">
                     <h2>Order Summary</h2>

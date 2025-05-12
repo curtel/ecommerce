@@ -7,10 +7,10 @@ const getApiUrl = () => {
   
   // In development, use localhost:4000
   if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:4000';
+    return 'http://localhost:4000/api';
   }
   
-  // In production, use relative /api path
+  // In production, use relative /api path which is proxied by nginx
   return '/api';
 };
 

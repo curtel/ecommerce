@@ -2,21 +2,7 @@ version: '3.8'
 name: "ecommerce"
 
 services:
-  nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-      - admin
-      - frontend
-    networks:
-      - app-network
-    volumes:
-      - ./upload:/app/upload
-
+  
   backend:
     build: 
       context: ./backend
@@ -33,13 +19,15 @@ services:
       - mongodb-network
     volumes:
       - ./upload:/app/upload
+      - ./backend:/app
 
   admin:
+    platform: linux/amd64
     build:
       context: ./admin
       dockerfile: Dockerfile
     ports:
-      - "5000:80"
+      - "5000:5000"
     environment:
       - NODE_ENV=production
       - PUBLIC_URL=/admin
@@ -47,7 +35,8 @@ services:
       - REACT_APP_IMAGE_URL=/images
     networks:
       - app-network
-
+    volumes:
+      - ./admin:/app
   frontend:
     build:
       context: ./frontend
@@ -61,6 +50,22 @@ services:
       - backend
     networks:
       - app-network
+    volumes:
+      - ./frontend:/app
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - admin
+      - frontend
+    networks:
+      - app-network
+    volumes:
+      - ./upload:/app/upload
 
   mongodb:
     image: mongo:latest

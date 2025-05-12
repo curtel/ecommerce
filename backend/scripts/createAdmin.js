@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const Admin = require('../models/Admin');
+require('dotenv').config();
 
+console.log(process.env.MONGODB_URI);
 const createAdmin = async () => {
   try {
-    await mongoose.connect('mongodb://mongodb:27017/ecommerce', {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://mongodb:27017/ecommerce', {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

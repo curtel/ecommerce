@@ -1,0 +1,136 @@
+.payment-methods {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.payment-methods h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #333;
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-option:hover {
+  border-color: #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.payment-option.selected {
+  border-color: #4a90e2;
+  background-color: #f0f7ff;
+}
+
+.option-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-option.selected .option-radio {
+  border-color: #4a90e2;
+}
+
+.radio-inner {
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: #4a90e2;
+  transition: all 0.2s ease;
+}
+
+.radio-inner.checked {
+  width: 12px;
+  height: 12px;
+}
+
+.option-details {
+  flex: 1;
+}
+
+.option-details h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.option-details p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.bank-selection {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.bank-selection h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #333;
+}
+
+.bank-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.bank-option {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bank-option:hover {
+  border-color: #ccc;
+  background-color: #f9f9f9;
+}
+
+.bank-option.selected {
+  border-color: #4a90e2;
+  background-color: #f0f7ff;
+}
+
+.option-name {
+  font-size: 14px;
+  color: #333;
+}
+
+.loading {
+  padding: 10px;
+  color: #666;
+  font-style: italic;
+} 

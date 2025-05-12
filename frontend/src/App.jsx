@@ -9,6 +9,7 @@ import Cart from './Pages/Cart';
 import { LoginSignup } from './Pages/LoginSignup';
 import Checkout from './Pages/Checkout';
 import OrderConfirmation from './Pages/OrderConfirmation';
+import PaymentResult from './Pages/PaymentResult';
 import Footer from './Components/Footer/Footer';
 import LatestCollection from './Pages/LatestCollection';
 import men_banner from './Components/Assets/banner_mens.png'
@@ -32,6 +33,7 @@ function App() {
           <Route path='/login' element={<LoginSignup />} />
           <Route path='/checkout' element={<Checkout />} />
           <Route path='/order-confirmation/:orderId' element={<OrderConfirmation />} />
+          <Route path='/payment/result' element={<PaymentResult />} />
           <Route path='/latest' element={<LatestCollection />} />
         </Routes>
         <Footer />

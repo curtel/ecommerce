@@ -71,7 +71,7 @@ export const LoginSignup = () => {
         if (!validateForm()) return;
 
         let responseData;
-        await fetch(`${API_URL}/login`, {
+        await fetch(`${API_URL}/user/login`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -93,13 +93,17 @@ export const LoginSignup = () => {
         if (!validateForm()) return;
 
         let responseData;
-        await fetch(`${API_URL}/signup`, {
+        await fetch(`${API_URL}/user/signup`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
+            body: JSON.stringify({
+                username: formData.name,
+                email: formData.email,
+                password: formData.password
+            }),
         }).then((response) => response.json())
             .then((data) => responseData = data)
 

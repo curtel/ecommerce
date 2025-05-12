@@ -54,6 +54,40 @@ const orderSchema = new mongoose.Schema({
         enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
         default: 'pending'
     },
+    payment: {
+        method: {
+            type: String,
+            enum: ['cod', 'zalopay', 'other'],
+            default: 'cod'
+        },
+        status: {
+            type: String,
+            enum: ['pending', 'completed', 'failed', 'refunded'],
+            default: 'pending'
+        },
+        transactionId: {
+            type: String
+        },
+        apptransid: {
+            type: String
+        },
+        bankcode: {
+            type: String
+        },
+        pmcid: {
+            type: String
+        },
+        amount: {
+            type: Number
+        },
+        discountamount: {
+            type: Number,
+            default: 0
+        },
+        zptranstoken: {
+            type: String
+        }
+    },
     date: {
         type: Date,
         default: Date.now

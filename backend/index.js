@@ -13,6 +13,8 @@ const adminAuthRouter = require('./routes/adminAuth');
 const orderRouter = require('./routes/order');
 const userRouter = require('./routes/user');
 const Users = require('./models/Users');
+const paymentRouter = require('./routes/payment');
+require('dotenv').config();
 
 // Create upload directory if it doesn't exist
 const uploadDir = './upload/images';
@@ -25,10 +27,11 @@ app.use(express.json());
 
 // CORS configuration
 app.use(cors({
-    origin: '*',  // Allow any origin
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5000', 'http://localhost:5001'], // Replace with your frontend origins
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+    allowedHeaders: ['Content-Type', 'Authorization', 'auth-token'],
+    credentials: true  // Allow credentials
+}));
 
 // Enable pre-flight requests for all routes
 app.options('*', cors());
@@ -53,26 +56,26 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://mongodb:27017/ecommerce',
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-.then(() => {
-    console.log('Connected to MongoDB successfully');
-})
-.catch((err) => {
-    console.error('MongoDB connection error:', err);
-});
+    .then(() => {
+        console.log('Connected to MongoDB successfully');
+    })
+    .catch((err) => {
+        console.error('MongoDB connection error:', err);
+    });
 
 // Routes
 app.use('/api/admin', adminAuthRouter);
-app.use('/api', orderRouter);
+app.use('/api/order', orderRouter);
 app.use('/api/user', userRouter);
-
+app.use('/api/payment', paymentRouter);
 // Test route to verify server is working
-app.get('/test', (req, res) => {
+app.get('/api/test', (req, res) => {
     res.json({ message: 'Test endpoint is working' });
 });
 
 //API Creation
 
-app.get('/allproducts', async (req, res) => {
+app.get('/api/allproducts', async (req, res) => {
     try {
         const products = await Product.find({});
         console.log('Products fetched:', products.length);
@@ -95,7 +98,7 @@ const storage = multer.diskStorage({
     }
 })
 
-const upload = multer({storage: storage})
+const upload = multer({ storage: storage })
 
 //Creating Upload endpoint images
 app.use('/images', express.static('upload/images'))
@@ -104,7 +107,7 @@ app.post("/upload", upload.single('product'), (req, res) => {
     // Get the host and protocol from the request headers
     const host = req.get('host');
     const protocol = req.protocol || 'http';
-    
+
     res.json({
         success: 1,
         image_url: `${protocol}://${host}/images/${req.file.filename}`
@@ -121,7 +124,7 @@ const Product = mongoose.model("Product", {
     name: {
         type: String,
         required: true,
-    }, 
+    },
     image: {
         type: String,
         required: true,
@@ -162,15 +165,15 @@ const Product = mongoose.model("Product", {
 });
 
 app.post('/addproduct', async (req, res) => {
-    let products=await Product.find({});
+    let products = await Product.find({});
     let id;
-    if(products.length>0){
+    if (products.length > 0) {
         let last_product_array = products.slice(-1);
         let last_product = last_product_array[0];
-        id=last_product.id+1;
+        id = last_product.id + 1;
     }
-    else{
-        id=1;
+    else {
+        id = 1;
     }
     const product = new Product({
         id: id,
@@ -195,18 +198,18 @@ app.post('/addproduct', async (req, res) => {
 
 //Creating API Deleting Products
 
-app.post('/removeproduct',async (req,res)=>{
-    await Product.findOneAndDelete({id:req.body.id});
+app.post('/removeproduct', async (req, res) => {
+    await Product.findOneAndDelete({ id: req.body.id });
     console.log("Remove");
     res.json({
-        success:true,
-        name:req.body.name,
+        success: true,
+        name: req.body.name,
     })
 })
 
 //Creating API for geting All Products
 
-app.get('/allproducts',async (req,res)=>{
+app.get('/api/allproducts', async (req, res) => {
     try {
         let products = await Product.find({});
         console.log("ALL Products Fetched");
@@ -225,14 +228,14 @@ app.get('/allproducts',async (req,res)=>{
 })
 
 // API for getting popular products in women category
-app.get('/popularinwomen', async (req, res) => {
+app.get('/api/popularinwomen', async (req, res) => {
     try {
-        const products = await Product.find({ 
+        const products = await Product.find({
             category: 'women',
             // You can add additional criteria here for "popular" items
             // For example, sort by date or some popularity metric
         }).sort({ date: -1 }).limit(8);  // Get latest 8 items
-        
+
         console.log("Popular women products fetched:", products.length);
         res.json(products);
     } catch (error) {
@@ -245,14 +248,14 @@ app.get('/popularinwomen', async (req, res) => {
 });
 
 // API for getting new collections
-app.get('/newcollections', async (req, res) => {
+app.get('/api/newcollections', async (req, res) => {
     try {
         const newProducts = await Product.find({
             available: true
         })
-        .sort({ date: -1 })  // Sort by date, newest first
-        .limit(8);          // Get latest 8 items
-        
+            .sort({ date: -1 })  // Sort by date, newest first
+            .limit(8);          // Get latest 8 items
+
         console.log("New collections fetched:", newProducts.length);
         res.json(newProducts);
     } catch (error) {
@@ -265,13 +268,13 @@ app.get('/newcollections', async (req, res) => {
 });
 
 // API for getting filtered and sorted products
-app.get('/products', async (req, res) => {
+app.get('/api/products', async (req, res) => {
     try {
         const { category, sort, minPrice, maxPrice, page = 1, limit = 12 } = req.query;
         const skip = (page - 1) * limit;
 
         let query = { available: true }; // Only get available products
-        
+
         if (category) {
             // Handle both "kid" and "kids" categories case-insensitively
             const categoryRegex = new RegExp(`^${category}s?$`, 'i');
@@ -317,8 +320,8 @@ app.get('/products', async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching products:', error);
-        res.status(500).json({ 
-            success: false, 
+        res.status(500).json({
+            success: false,
             error: 'Internal server error',
             products: [],
             total: 0,

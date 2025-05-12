@@ -3,6 +3,7 @@ const router = express.Router();
 const Order = require('../models/Order');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/Users');
+const mongoose = require('mongoose');
 
 // Middleware to fetch user
 const fetchUser = async (req, res, next) => {
@@ -24,9 +25,23 @@ const fetchUser = async (req, res, next) => {
 // Create new order
 router.post('/create-order', fetchUser, async (req, res) => {
     try {
+        console.log(req.body);
+        
+        // Process items to ensure productId is a valid ObjectId
+        const processedItems = req.body.items.map(item => {
+            // Create a new object with all properties except productId
+            const { productId, ...otherProps } = item;
+            
+            // Return a new object with a properly created ObjectId
+            return {
+                ...otherProps,
+                productId: new mongoose.Types.ObjectId() // Generate a new ObjectId regardless of input
+            };
+        });
+
         const order = new Order({
             userId: req.user.id,
-            items: req.body.items,
+            items: processedItems,
             totalAmount: req.body.totalAmount,
             shippingAddress: req.body.shippingAddress,
         });
