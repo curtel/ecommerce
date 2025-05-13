@@ -20,7 +20,7 @@ import {
 } from '@mui/material'
 import PhotoCamera from '@mui/icons-material/PhotoCamera'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
-
+import { API_URL } from '../../config';
 const AddProduct = () => {
   const [image, setImage] = useState(null);
   const [detailImages, setDetailImages] = useState([]);

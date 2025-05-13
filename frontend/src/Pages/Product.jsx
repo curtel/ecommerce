@@ -5,6 +5,7 @@ import Breadcrums from '../Components/Breadcrums/Breadcrums'
 import ProductDisplay from '../Components/ProductDisplay/ProductDisplay'
 import DescriptionBox from '../Components/DescriptionBox/DescriptionBox'
 import RelatedProducts from '../Components/RelatedProducts/RelatedProducts'
+import { API_URL } from '../config';
 
 const Product = () => {
   const { all_product } = useContext(ShopContext);
@@ -25,7 +26,7 @@ const Product = () => {
         }
 
         // If not found in context, fetch from backend
-        const response = await fetch(`http://localhost:4000/product/${productId}`);
+        const response = await fetch(`${API_URL}/product/${productId}`);
         if (!response.ok) {
           throw new Error('Product not found');
         }
