@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { ShopContext } from '../../Context/ShopContext'
 
 const Item = (props) => {
+    console.log('rendered item');
     const { addToCart } = useContext(ShopContext);
     const [showModal, setShowModal] = useState(false);
     const [selectedSize, setSelectedSize] = useState('M');
@@ -12,6 +13,10 @@ const Item = (props) => {
     const [success, setSuccess] = useState(false);
     const modalRef = useRef(null);
     
+
+    useEffect(() => {
+        console.log('rendered showModal');
+    }, [showModal]);
     // Handle click outside modal
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -19,6 +24,7 @@ const Item = (props) => {
             if (modalRef.current && 
                 !modalRef.current.contains(event.target) && 
                 !event.target.classList.contains('add-to-cart')) {
+                console.log('clicked outside modal');
                 setShowModal(false);
             }
         };

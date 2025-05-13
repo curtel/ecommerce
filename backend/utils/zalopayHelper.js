@@ -3,7 +3,7 @@ const axios = require('axios');
 const moment = require('moment');
 const CryptoJS = require('crypto-js'); // npm install crypto-js
 const { v4: uuid } = require('uuid');
-
+require('dotenv').config();
 const config = {
   appid: "2554",
   key1: "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn",
@@ -77,7 +77,7 @@ const api = {
     try {
       // APP INFO
       const embeddata = JSON.stringify({
-        redirecturl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment/result?orderId=${orderId}`,
+        redirecturl: `${process.env.FRONT_END || 'http://localhost:3000'}/payment/result?orderId=${orderId}`,
         merchantinfo: "E-commerce payment"
       });
 

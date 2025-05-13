@@ -46,7 +46,14 @@
     color: #666;
 }
 
-.return-home-button {
+.confirmation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.return-home-button, .view-order-button {
     padding: 15px 30px;
     background: #ff4141;
     color: white;
@@ -54,10 +61,17 @@
     border-radius: 4px;
     font-size: 18px;
     cursor: pointer;
-    margin-top: 20px;
     transition: background-color 0.3s;
+}
+
+.view-order-button {
+    background: #4a55a2;
 }
 
 .return-home-button:hover {
     background: #ff2929;
+}
+
+.view-order-button:hover {
+    background: #374282;
 } 

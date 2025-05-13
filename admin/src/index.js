@@ -5,7 +5,6 @@ import App from './App';
 import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-console.log('test here');
 root.render(
   <React.StrictMode>
     <BrowserRouter basename={process.env.NODE_ENV === 'production' ? '/admin' : ''}>

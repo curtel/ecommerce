@@ -14,6 +14,7 @@ const ShopContextProvider = (props) => {
     const [sortOption, setSortOption] = useState('newest');
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedClothingType, setSelectedClothingType] = useState('');
+    const [initialFetchDone, setInitialFetchDone] = useState(false);
 
     // Hàm helper để check response
     const handleResponse = async (response) => {
@@ -85,6 +86,18 @@ const ShopContextProvider = (props) => {
 
     // Update filters and fetch products
     const updateFilters = async (category = '', sort = sortOption, size = selectedSize, clothingType = selectedClothingType) => {
+        // Skip if this is just the initial category filter and we're still loading
+        if (category && !size && !clothingType && sort === 'newest' && initialFetchDone) {
+            // If just the basic category is changed and nothing else, fetch again
+            setSortOption(sort);
+            setSelectedSize(size);
+            setSelectedClothingType(clothingType);
+            setCurrentPage(1); // Reset to first page when filters change
+            await fetchProducts(category, 1, sort, size, clothingType);
+            return;
+        }
+
+        // Regular filter update
         setSortOption(sort);
         setSelectedSize(size);
         setSelectedClothingType(clothingType);
@@ -103,13 +116,12 @@ const ShopContextProvider = (props) => {
     useEffect(() => {
         const initializeShop = async () => {
             try {
-                // First fetch products
-                await fetchProducts();
-                
-                // Then fetch cart
+                // Skip initial product fetch - ShopCategory will handle this
+                // Instead, just fetch the cart
                 const token = localStorage.getItem('auth-token');
                 if (!token) {
                     setCartItems([]);
+                    setLoading(false);
                     return;
                 }
                 
@@ -125,10 +137,13 @@ const ShopContextProvider = (props) => {
                 const data = await handleResponse(response);
                 setCartItems(data);
                 setError(null);
+                setInitialFetchDone(true);
+                setLoading(false);
             } catch (err) {
                 console.error('Error initializing shop:', err);
                 setError(err.message);
                 setCartItems([]);
+                setLoading(false);
             }
         };
 
@@ -172,7 +187,7 @@ const ShopContextProvider = (props) => {
         if (!token) return;
 
         try {
-            const response = await fetch(`${API_URL}/removefromcart`, {
+            const response = await fetch(`${API_URL}/user/removefromcart`, {
                 ...fetchConfig,
                 method: 'POST',
                 headers: {
@@ -198,7 +213,7 @@ const ShopContextProvider = (props) => {
         if (!token) return;
 
         try {
-            const response = await fetch(`${API_URL}/updatecartitem`, {
+            const response = await fetch(`${API_URL}/user/updatecartitem`, {
                 ...fetchConfig,
                 method: 'POST',
                 headers: {
@@ -229,7 +244,7 @@ const ShopContextProvider = (props) => {
         if (!token) return;
 
         try {
-            const response = await fetch(`${API_URL}/clearcart`, {
+            const response = await fetch(`${API_URL}/order/clearcart`, {
                 ...fetchConfig,
                 method: 'POST',
                 headers: {
@@ -263,6 +278,7 @@ const ShopContextProvider = (props) => {
     const contextValue = {
         all_product,
         cartItems,
+        setCartItems,
         loading,
         error,
         currentPage,
@@ -277,7 +293,8 @@ const ShopContextProvider = (props) => {
         getTotalCartItems,
         clearCart,
         updateFilters,
-        loadMoreProducts
+        loadMoreProducts,
+        initialFetchDone
     };
 
     return (

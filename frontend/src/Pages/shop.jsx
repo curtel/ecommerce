@@ -1,13 +1,21 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import './CSS/Shop.css'
 import { ShopContext } from '../Context/ShopContext'
 import Item from '../Components/Item/Item'
 import { useNavigate } from 'react-router-dom'
 
 const Shop = () => {
-    const { all_product, loading, error } = useContext(ShopContext);
+    const { all_product, loading, error, updateFilters, initialFetchDone } = useContext(ShopContext);
     const navigate = useNavigate();
+    
+    // Fetch products when component mounts if they haven't been fetched yet
+    useEffect(() => {
+        if (!initialFetchDone || all_product.length === 0) {
+            updateFilters();
+        }
+    }, [initialFetchDone, all_product.length, updateFilters]);
 
+    console.log('rendered');
     const categories = [
         {
             name: "Men's Collection",
@@ -30,8 +38,8 @@ const Shop = () => {
                 <div className="hero-content">
                     <h1 className="hero-title">Welcome to Shopper</h1>
                     <p className="hero-subtitle">Discover the latest trends in fashion and explore our new collections</p>
-                    <button className="hero-button" onClick={() => navigate('/latest')}>
-                        Explore Latest Collection
+                    <button className="hero-button" onClick={() => navigate('/newest')}>
+                        Explore Newest Collection
                     </button>
                 </div>
             </div>

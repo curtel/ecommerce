@@ -71,6 +71,49 @@ router.get('/user-orders/:userId', async (req, res) => {
     }
 });
 
+// Get orders for the authenticated user
+router.get('/my-orders', fetchUser, async (req, res) => {
+    try {
+        const orders = await Order.find({ userId: req.user.id }).sort({ createdAt: -1 });
+        res.json({
+            success: true,
+            orders
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Get a single order by ID
+router.get('/:orderId', fetchUser, async (req, res) => {
+    try {
+        const order = await Order.findOne({ 
+            _id: req.params.orderId,
+            userId: req.user.id
+        });
+        
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                error: "Order not found"
+            });
+        }
+        
+        res.json({
+            success: true,
+            order
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 // Clear cart after order
 router.post('/clearcart', fetchUser, async (req, res) => {
     try {

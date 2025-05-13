@@ -2,18 +2,22 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext({
   isAuthenticated: false,
+  loading: true,
   login: () => {},
   logout: () => {}
 });
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
+    console.log('[DEBUG] token', token);
     if (token) {
       setIsAuthenticated(true);
     }
+    setLoading(false);
   }, []);
 
   const login = (token) => {
@@ -28,6 +32,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     isAuthenticated,
+    loading,
     login,
     logout
   };

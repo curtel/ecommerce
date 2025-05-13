@@ -49,9 +49,6 @@ router.get('/banks', async (req, res) => {
 // Create ZaloPay payment for an order
 router.post('/create-payment/:orderId', fetchUser, async (req, res) => {
     try {
-
-        console.log(req.params);
-        // Get order
         const order = await Order.findById(req.params.orderId);
         
         if (!order) {
@@ -123,32 +120,10 @@ router.post('/create-payment/:orderId', fetchUser, async (req, res) => {
 });
 
 // Handle ZaloPay callback
-router.post('/callback', async (req, res) => {
+router.post('/success/:orderId', async (req, res) => {
     try {
-        // Extract data from the request
-        const data = req.body;
-        
-        // Validate data
-        const dataStr = `${data.appid}|${data.apptransid}|${data.appuser}|${data.amount}|${data.apptime}|${data.embeddata}|${data.item}`;
-        const requestMac = data.mac;
-        
-        // Generate MAC for verification
-        const mac = require('crypto')
-            .createHmac('sha256', process.env.ZALOPAY_KEY2 || "Iyz2habzyr7AG8SgvoBCbKwKi3UzlLi3")
-            .update(dataStr)
-            .digest('hex');
-        
-        // Verify MAC
-        if (mac !== requestMac) {
-            return res.status(400).json({
-                return_code: -1,
-                return_message: 'Invalid MAC'
-            });
-        }
-        
-        // Find order by apptransid
         const order = await Order.findOne({
-            'payment.apptransid': data.apptransid
+            _id: req.params.orderId
         });
         
         if (!order) {
@@ -159,16 +134,11 @@ router.post('/callback', async (req, res) => {
         }
         
         // Update order payment status
-        order.payment.status = data.status === 1 ? 'completed' : 'failed';
-        
-        // If payment successful, update order status to confirmed
-        if (data.status === 1) {
-            order.status = 'confirmed';
-        }
+        order.payment.status = 'completed';
+        order.status = 'confirmed';
         
         await order.save();
         
-        // Return success
         res.json({
             return_code: 1,
             return_message: 'Success'

@@ -2,13 +2,10 @@ const port = 4000;
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
 const fs = require('fs');
-const { log } = require("console");
-const { generateSampleData } = require('./genarate');
 const adminAuthRouter = require('./routes/adminAuth');
 const orderRouter = require('./routes/order');
 const userRouter = require('./routes/user');
@@ -198,9 +195,8 @@ app.post('/addproduct', async (req, res) => {
 
 //Creating API Deleting Products
 
-app.post('/removeproduct', async (req, res) => {
+app.post('/api/removeproduct', async (req, res) => {
     await Product.findOneAndDelete({ id: req.body.id });
-    console.log("Remove");
     res.json({
         success: true,
         name: req.body.name,

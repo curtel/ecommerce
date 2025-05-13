@@ -4,6 +4,7 @@ import { ShopContext } from '../Context/ShopContext'
 import Item from '../Components/Item/Item'
 
 const ShopCategory = (props) => {
+    console.log('[ShopCategory] props.category:', props.category);
     const { 
         all_product, 
         loading, 
@@ -11,7 +12,8 @@ const ShopCategory = (props) => {
         currentPage,
         totalPages,
         loadMoreProducts,
-        updateFilters
+        updateFilters,
+        initialFetchDone
     } = useContext(ShopContext);
 
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -30,9 +32,11 @@ const ShopCategory = (props) => {
     });
 
     useEffect(() => {
-        // Initial fetch with category
-        updateFilters(props.category);
-    }, [props.category]);
+        // Only fetch if we have a category to fetch or we need the initial data
+        if (props.category || !initialFetchDone) {
+            updateFilters(props.category);
+        }
+    }, [props.category, initialFetchDone]);
 
     const filterOptions = {
         category: ['T-Shirts', 'Shirts', 'Pants', 'Dresses'],

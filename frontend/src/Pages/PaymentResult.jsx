@@ -23,13 +23,14 @@ const PaymentResult = () => {
             return;
         }
 
-        console.log(orderIdParam, statusParam);
         if (orderIdParam) {
             setOrderId(orderIdParam);
             
             if (statusParam == 1) {
                 setStatus('success');
                 setMessage('Your payment has been successfully processed! Your order is confirmed.');
+                // Call success endpoint to update backend
+                updatePaymentSuccess(orderIdParam);
             } else if (statusParam === 'failed') {
                 setStatus('error');
                 setMessage('Your payment was unsuccessful. Please try again or choose a different payment method.');
@@ -67,7 +68,7 @@ const PaymentResult = () => {
             const data = await response.json();
             
             if (data.success) {
-                if (data.payment.status === 'completed') {
+                if (data.payment.status == 1) {
                     setStatus('success');
                     setMessage('Your payment has been successfully processed! Your order is confirmed.');
                 } else if (data.payment.status === 'failed') {
@@ -87,11 +88,41 @@ const PaymentResult = () => {
         }
     };
 
+    // Function to update payment success status in backend
+    const updatePaymentSuccess = async (orderId) => {
+        try {
+            const authToken = localStorage.getItem('auth-token');
+            if (!authToken) {
+                console.error('No auth token available for success update');
+                return;
+            }
+
+            const response = await fetch(`${API_URL}/payment/success/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    ...fetchConfig.headers,
+                    'auth-token': authToken
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!data.success) {
+                console.error('Failed to update payment success status:', data.error);
+            }
+        } catch (error) {
+            console.error('Error updating payment success status:', error);
+        }
+    };
+
     const goToOrderDetails = () => {
         if (orderId) {
             navigate(`/orders/${orderId}`);
         } else {
-            navigate('/profile');
+            navigate('/orders');
         }
     };
 

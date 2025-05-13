@@ -20,6 +20,10 @@ const OrderConfirmation = () => {
         navigate('/'); // Navigate to home page
     };
 
+    const handleViewOrder = () => {
+        navigate(`/orders/${orderId}`); // Navigate to order detail page
+    };
+
     if (!order) {
         return <div>Loading...</div>;
     }
@@ -35,9 +39,14 @@ const OrderConfirmation = () => {
                     <p>Status: {order.status}</p>
                 </div>
                 <p>We'll send you an email with your order details and tracking information.</p>
-                <button onClick={handleReturnHome} className="return-home-button">
-                    Return to Home
-                </button>
+                <div className="confirmation-buttons">
+                    <button onClick={handleViewOrder} className="view-order-button">
+                        View Order
+                    </button>
+                    <button onClick={handleReturnHome} className="return-home-button">
+                        Return to Home
+                    </button>
+                </div>
             </div>
         </div>
     );

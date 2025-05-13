@@ -42,7 +42,7 @@ const OrderManagement = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/admin/orders`, {
+      const response = await fetch(`${API_URL}/admin/orders`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }

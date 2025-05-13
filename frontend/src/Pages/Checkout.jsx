@@ -163,11 +163,12 @@ const Checkout = () => {
                 // Handle payment based on selected method
                 if (paymentInfo.method === 'zalopay') {
                     // Create ZaloPay payment
+                    await clearCart();
                     await handleZaloPayPayment(data.orderId);
                 } else {
                     // For COD, just clear the cart and navigate to confirmation
                     await clearCart();
-                navigate('/order-confirmation/' + data.orderId);
+                    navigate(`/orders/${data.orderId}`);
                 }
             } else {
                 throw new Error(data.error || 'Error creating order');

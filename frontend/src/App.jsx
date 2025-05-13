@@ -11,10 +11,12 @@ import Checkout from './Pages/Checkout';
 import OrderConfirmation from './Pages/OrderConfirmation';
 import PaymentResult from './Pages/PaymentResult';
 import Footer from './Components/Footer/Footer';
-import LatestCollection from './Pages/LatestCollection';
 import men_banner from './Components/Assets/banner_mens.png'
 import women_banner from './Components/Assets/banner_women.png'
 import kids_banner from './Components/Assets/banner_kids.png'
+import NewCollections from './Components/NewCollections/NewCollections';
+import Orders from './Pages/Orders';
+import OrderDetail from './Pages/OrderDetail';
 
 function App() {
   return (
@@ -34,7 +36,9 @@ function App() {
           <Route path='/checkout' element={<Checkout />} />
           <Route path='/order-confirmation/:orderId' element={<OrderConfirmation />} />
           <Route path='/payment/result' element={<PaymentResult />} />
-          <Route path='/latest' element={<LatestCollection />} />
+          <Route path='/newest' element={<NewCollections />} />
+          <Route path='/orders' element={<Orders />} />
+          <Route path='/orders/:orderId' element={<OrderDetail />} />
         </Routes>
         <Footer />
       </BrowserRouter>

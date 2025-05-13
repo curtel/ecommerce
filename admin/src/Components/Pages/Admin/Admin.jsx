@@ -8,7 +8,6 @@ import OrderManagement from '../../OrderManagement/OrderManagement'
 import Login from '../Login/Login'
 import ProtectedRoute from '../../ProtectedRoute/ProtectedRoute'
 import { AuthProvider } from '../../../context/AuthContext'
-
 const Admin = () => {
   return (
     <AuthProvider>
