@@ -250,6 +250,8 @@ const AddProduct = () => {
               >
                 <MenuItem value="shirt">Shirt</MenuItem>
                 <MenuItem value="pants">Pants</MenuItem>
+                <MenuItem value="t-shirt">T-Shirt</MenuItem>
+                <MenuItem value="dress">Dress</MenuItem>
               </Select>
               {formErrors.clothingType && (
                 <Typography color="error" variant="caption">

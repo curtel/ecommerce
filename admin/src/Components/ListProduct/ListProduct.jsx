@@ -227,6 +227,8 @@ const ListProduct = () => {
                             >
                                 <option value="shirt">Shirt</option>
                                 <option value="pants">Pants</option>
+                                <option value="t-shirt">T-Shirt</option>
+                                <option value="dress">Dress</option>
                             </select>
                         </div>
 

@@ -166,6 +166,7 @@
 .filter-section-content.open {
     max-height: 300px;
     padding-bottom: 15px;
+    overflow-y: auto;
 }
 
 .filter-option {
@@ -187,6 +188,22 @@
 }
 
 .filter-checkbox.checked {
+    background: #333;
+    color: white;
+}
+
+.filter-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #333;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.filter-radio.checked {
     background: #333;
     color: white;
 }

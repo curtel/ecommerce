@@ -13,11 +13,13 @@ const ShopCategory = (props) => {
         totalPages,
         loadMoreProducts,
         updateFilters,
-        initialFetchDone
+        initialFetchDone,
+        sortOption
     } = useContext(ShopContext);
 
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [activeSection, setActiveSection] = useState(null);
+    const [selectedSort, setSelectedSort] = useState(sortOption || 'newest');
     const [selectedFilters, setSelectedFilters] = useState({
         category: [],
         color: [],
@@ -39,11 +41,18 @@ const ShopCategory = (props) => {
     }, [props.category, initialFetchDone]);
 
     const filterOptions = {
-        category: ['T-Shirts', 'Shirts', 'Pants', 'Dresses'],
+        category: ['shirt', 'pants', 't-shirt', 'dress'],
         color: ['Beige', 'Black', 'Blue', 'Brown', 'Green', 'Grey', 'Multicolor', 'Pink', 'Red', 'White', 'Yellow'],
         material: ['Cotton', 'Denim', 'Leather', 'Linen', 'Polyester', 'Wool'],
         size: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
     };
+
+    const sortOptions = [
+        { value: 'newest', label: 'Newest First' },
+        { value: 'price_asc', label: 'Price: Low to High' },
+        { value: 'price_desc', label: 'Price: High to Low' },
+        { value: 'popularity', label: 'Most Popular' }
+    ];
 
     const getBannerContent = (category) => {
         switch(category) {
@@ -86,7 +95,7 @@ const ShopCategory = (props) => {
 
     const handleApplyFilters = () => {
         setAppliedFilters(selectedFilters);
-        updateFilters(props.category, selectedFilters);
+        updateFilters(props.category, { ...selectedFilters, sort: selectedSort });
         setIsFilterModalOpen(false);
     };
 
@@ -103,6 +112,7 @@ const ShopCategory = (props) => {
             material: [],
             size: []
         });
+        setSelectedSort(sortOption || 'newest');
         updateFilters(props.category);
     };
 
@@ -177,6 +187,27 @@ const ShopCategory = (props) => {
                     <button className="filter-modal-close" onClick={() => setIsFilterModalOpen(false)}>×</button>
                 </div>
 
+                {/* Sort Options */}
+                <div className="filter-section">
+                    <div className="filter-section-header" onClick={() => handleFilterClick('sort')}>
+                        <span>Sort By</span>
+                        <span>{activeSection === 'sort' ? '−' : '+'}</span>
+                    </div>
+                    <div className={`filter-section-content ${activeSection === 'sort' ? 'open' : ''}`}>
+                        {sortOptions.map(option => (
+                            <div key={option.value} className="filter-option">
+                                <div 
+                                    className={`filter-radio ${selectedSort === option.value ? 'checked' : ''}`}
+                                    onClick={() => setSelectedSort(option.value)}
+                                >
+                                    {selectedSort === option.value && '●'}
+                                </div>
+                                <span>{option.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="filter-sections">
                     {Object.entries(filterOptions).map(([section, options]) => (
                         <div key={section} className="filter-section">
@@ -206,7 +237,25 @@ const ShopCategory = (props) => {
                         Reset all filters
                     </button>
                     <button className="apply-button" onClick={handleApplyFilters}>
-                        See the {all_product.length} product(s)
+                        See the {all_product.filter(item => {
+                            // Filter by category
+                            if (selectedFilters.category.length > 0 && !selectedFilters.category.includes(item.clothingType)) {
+                                return false;
+                            }
+                            // Filter by color
+                            if (selectedFilters.color.length > 0 && !selectedFilters.color.includes(item.color)) {
+                                return false;
+                            }
+                            // Filter by material
+                            if (selectedFilters.material.length > 0 && !selectedFilters.material.includes(item.material)) {
+                                return false;
+                            }
+                            // Filter by size
+                            if (selectedFilters.size.length > 0 && !selectedFilters.size.some(size => item.available_sizes.includes(size))) {
+                                return false;
+                            }
+                            return true;
+                        }).length} product(s)
                     </button>
                 </div>
             </div>

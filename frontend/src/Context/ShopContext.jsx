@@ -14,6 +14,8 @@ const ShopContextProvider = (props) => {
     const [sortOption, setSortOption] = useState('newest');
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedClothingType, setSelectedClothingType] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
+    const [selectedMaterial, setSelectedMaterial] = useState('');
     const [initialFetchDone, setInitialFetchDone] = useState(false);
 
     // Hàm helper để check response
@@ -35,17 +37,24 @@ const ShopContextProvider = (props) => {
     };
 
     // Fetch products with filters and sorting
-    const fetchProducts = async (category = '', page = 1, sort = 'newest', size = '', clothingType = '') => {
+    const fetchProducts = async (category = '', page = 1, sort = 'newest', size = '', clothingType = '', color = '', material = '') => {
         try {
             setLoading(true);
-            const queryParams = new URLSearchParams({
-                page,
-                sort,
-                ...(category && { category }),
-                ...(size && { size }),
-                ...(clothingType && { clothingType })
-            });
+            
+            // Build query parameters
+            const queryParams = new URLSearchParams();
+            
+            // Add all non-empty filter parameters
+            queryParams.append('page', page);
+            if (sort) queryParams.append('sort', sort);
+            if (category) queryParams.append('category', category);
+            if (size) queryParams.append('size', size);
+            if (clothingType) queryParams.append('clothingType', clothingType.toLowerCase());
+            if (color) queryParams.append('color', color);
+            if (material) queryParams.append('material', material);
 
+            console.log('Fetching products with params:', Object.fromEntries(queryParams.entries()));
+            
             const response = await fetch(`${API_URL}/products?${queryParams}`, {
                 ...fetchConfig,
                 method: 'GET'
@@ -85,15 +94,48 @@ const ShopContextProvider = (props) => {
     };
 
     // Update filters and fetch products
-    const updateFilters = async (category = '', sort = sortOption, size = selectedSize, clothingType = selectedClothingType) => {
+    const updateFilters = async (category = '', filters = null) => {
+        let sort = sortOption;
+        let size = selectedSize;
+        let clothingType = selectedClothingType;
+        let color = selectedColor;
+        let material = selectedMaterial;
+        
+        // If filters object is provided, extract the values
+        if (filters) {
+            // Extract sort option if provided
+            if (filters.sort) {
+                sort = filters.sort;
+            }
+            
+            // Map the filter values to the expected parameters
+            if (filters.size && filters.size.length > 0) {
+                size = filters.size.join(',');
+            }
+            
+            if (filters.category && filters.category.length > 0) {
+                clothingType = filters.category.map(cat => cat.toLowerCase()).join(',');
+            }
+            
+            if (filters.color && filters.color.length > 0) {
+                color = filters.color.join(',');
+            }
+            
+            if (filters.material && filters.material.length > 0) {
+                material = filters.material.join(',');
+            }
+        }
+        
         // Skip if this is just the initial category filter and we're still loading
-        if (category && !size && !clothingType && sort === 'newest' && initialFetchDone) {
+        if (category && !size && !clothingType && !color && !material && sort === 'newest' && initialFetchDone) {
             // If just the basic category is changed and nothing else, fetch again
             setSortOption(sort);
             setSelectedSize(size);
             setSelectedClothingType(clothingType);
+            setSelectedColor(color);
+            setSelectedMaterial(material);
             setCurrentPage(1); // Reset to first page when filters change
-            await fetchProducts(category, 1, sort, size, clothingType);
+            await fetchProducts(category, 1, sort, size, clothingType, color, material);
             return;
         }
 
@@ -101,15 +143,25 @@ const ShopContextProvider = (props) => {
         setSortOption(sort);
         setSelectedSize(size);
         setSelectedClothingType(clothingType);
+        setSelectedColor(color);
+        setSelectedMaterial(material);
         setCurrentPage(1); // Reset to first page when filters change
-        await fetchProducts(category, 1, sort, size, clothingType);
+        await fetchProducts(category, 1, sort, size, clothingType, color, material);
     };
 
     // Load more products (next page)
     const loadMoreProducts = async (category = '') => {
         if (currentPage < totalPages && !loading) {
             const nextPage = currentPage + 1;
-            await fetchProducts(category, nextPage, sortOption, selectedSize, selectedClothingType);
+            await fetchProducts(
+                category, 
+                nextPage, 
+                sortOption, 
+                selectedSize, 
+                selectedClothingType,
+                selectedColor,
+                selectedMaterial
+            );
         }
     };
 
@@ -286,6 +338,8 @@ const ShopContextProvider = (props) => {
         sortOption,
         selectedSize,
         selectedClothingType,
+        selectedColor,
+        selectedMaterial,
         addToCart,
         removeFromCart,
         updateCartItem,

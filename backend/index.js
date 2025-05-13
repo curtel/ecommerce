@@ -136,7 +136,7 @@ const Product = mongoose.model("Product", {
     },
     clothingType: {
         type: String,
-        enum: ['shirt', 'pants'],
+        enum: ['shirt', 'pants', 't-shirt', 'dress'],
         required: true
     },
     new_price: {
@@ -193,7 +193,7 @@ app.post('/addproduct', async (req, res) => {
     })
 });
 
-//Creating API Deleting Products
+// Creating API Deleting Products
 
 app.post('/api/removeproduct', async (req, res) => {
     await Product.findOneAndDelete({ id: req.body.id });
@@ -201,6 +201,62 @@ app.post('/api/removeproduct', async (req, res) => {
         success: true,
         name: req.body.name,
     })
+})
+
+// Creating API for updating product
+app.post('/api/updateproduct', async (req, res) => {
+    try {
+        const { id, name, category, clothingType, new_price, old_price, image, detail_images, removed_images, new_images } = req.body;
+        
+        // Find the product by ID
+        const product = await Product.findOne({ id });
+        
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+        
+        // Update basic product information
+        product.name = name;
+        product.category = category;
+        product.clothingType = clothingType;
+        product.new_price = new_price;
+        product.old_price = old_price;
+        
+        // Update main image if provided
+        if (image) {
+            product.image = image;
+        }
+        
+        // Handle detail images
+        if (detail_images) {
+            // Filter out any removed images
+            const updatedDetailImages = detail_images.filter(img => !removed_images?.includes(img));
+            
+            // Add any new images
+            if (new_images && new_images.length > 0) {
+                updatedDetailImages.push(...new_images);
+            }
+            
+            product.detail_images = updatedDetailImages;
+        }
+        
+        // Save the updated product
+        await product.save();
+        
+        res.json({
+            success: true,
+            product: product
+        });
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Failed to update product'
+        });
+    }
 })
 
 //Creating API for geting All Products
@@ -266,7 +322,7 @@ app.get('/api/newcollections', async (req, res) => {
 // API for getting filtered and sorted products
 app.get('/api/products', async (req, res) => {
     try {
-        const { category, sort, minPrice, maxPrice, page = 1, limit = 12 } = req.query;
+        const { category, sort, clothingType, size, color, material, minPrice, maxPrice, page = 1, limit = 12 } = req.query;
         const skip = (page - 1) * limit;
 
         let query = { available: true }; // Only get available products
@@ -275,6 +331,49 @@ app.get('/api/products', async (req, res) => {
             // Handle both "kid" and "kids" categories case-insensitively
             const categoryRegex = new RegExp(`^${category}s?$`, 'i');
             query.category = categoryRegex;
+        }
+
+        console.log('[Products] clothingType:', clothingType);
+        if (clothingType) {
+            // Handle comma-separated clothingType values
+            const types = clothingType.split(',');
+            if (types.length > 1) {
+                query.clothingType = { $in: types };
+            } else {
+                query.clothingType = clothingType;
+            }
+        }
+
+        // Handle size filter (sizes are stored as an array in the database)
+        if (size) {
+            const sizes = size.split(',');
+            if (sizes.length > 1) {
+                // Find products that have ANY of the specified sizes
+                query.sizes = { $in: sizes };
+            } else {
+                // Find products that have this specific size
+                query.sizes = size;
+            }
+        }
+
+        // Handle color filter if we add it to the schema later
+        if (color) {
+            const colors = color.split(',');
+            if (colors.length > 1) {
+                query.color = { $in: colors };
+            } else {
+                query.color = color;
+            }
+        }
+
+        // Handle material filter if we add it to the schema later
+        if (material) {
+            const materials = material.split(',');
+            if (materials.length > 1) {
+                query.material = { $in: materials };
+            } else {
+                query.material = material;
+            }
         }
 
         if (minPrice || maxPrice) {
@@ -297,6 +396,10 @@ app.get('/api/products', async (req, res) => {
             default:
                 sortQuery = { date: -1 }; // Default to newest
         }
+
+        // Log the final query for debugging
+        console.log('MongoDB Query:', JSON.stringify(query));
+        console.log('Sort Query:', JSON.stringify(sortQuery));
 
         const products = await Product.find(query)
             .sort(sortQuery)
