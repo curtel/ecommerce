@@ -58,7 +58,7 @@ const OrderManagement = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const response = await fetch(`${API_URL}/api/admin/orders/${orderId}/status`, {
+      const response = await fetch(`${API_URL}/admin/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
