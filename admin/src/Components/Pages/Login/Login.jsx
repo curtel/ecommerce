@@ -37,7 +37,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/admin/login`, {
+      const response = await fetch(`${API_URL}/admin/login`, {
         method: 'POST',
         ...fetchConfig,
         body: JSON.stringify(credentials)
